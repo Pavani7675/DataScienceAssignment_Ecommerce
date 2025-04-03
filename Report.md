@@ -1,104 +1,111 @@
-### Step-by-Step Documentation for Database Setup
+### 📝 Markdown Report: Exploratory Data Analysis (EDA)
 
-
-#### Step 1: Creating the Database
-1. Open **phpMyAdmin** or any database management tool.
-2. Create a new database named `ecommerce`.
-3. Run the following SQL commands to create the necessary tables:
-
-**Cart Table**
-```sql
-CREATE TABLE cart (
-    id INT AUTO_INCREMENT PRIMARY KEY,
-    user_id INT NOT NULL,
-    product_id INT NOT NULL,
-    quantity INT NOT NULL,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
-);
-```
-
-**Products Table**
-```sql
-CREATE TABLE products (
-    id INT AUTO_INCREMENT PRIMARY KEY,
-    name VARCHAR(255) NOT NULL,
-    price DECIMAL(10, 2) NOT NULL,
-    description TEXT,
-    image VARCHAR(255),
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-);
-```
-
-**Users Table**
-```sql
-CREATE TABLE users (
-    id INT AUTO_INCREMENT PRIMARY KEY,
-    username VARCHAR(50) NOT NULL,
-    email VARCHAR(100) NOT NULL UNIQUE,
-    password VARCHAR(255) NOT NULL,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    role ENUM('user', 'admin') DEFAULT 'user'
-);
-```
-**Orders Table**
-```sql
-CREATE TABLE orders (
-    id INT(11) AUTO_INCREMENT PRIMARY KEY,
-    user_id INT(11) NOT NULL,
-    total_amount DECIMAL(10,2) NOT NULL,
-    status ENUM('Pending', 'Completed', 'Cancelled') DEFAULT 'Pending',
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
-);
-```
-**order_items Table**
-```sql
-CREATE TABLE order_items (
-    id INT(11) AUTO_INCREMENT PRIMARY KEY,
-    order_id INT(11) NOT NULL,
-    product_id INT(11) NOT NULL,
-    quantity INT(11) NOT NULL,
-    price DECIMAL(10,2) NOT NULL,
-    FOREIGN KEY (order_id) REFERENCES orders(id) ON DELETE CASCADE,
-    FOREIGN KEY (product_id) REFERENCES products(id) ON DELETE CASCADE
-);
-```
+#### 🌊 Sales Data Analysis & Trends
 
 ---
 
-#### Step 2: Setting Up `db.php`
-1. Create a folder named `includes` in your project directory.
-2. Inside this folder, create a file named `db.php`.
-3. Add the following code:
+## 1⃣ Data Overview
+This project analyzes a sales dataset to extract key insights using Exploratory Data Analysis (EDA), statistical moments, and interactive visualizations.
 
-**`db.php`**
-```php
-<?php
-$host = 'localhost';
-$dbname = 'ecommerce';
-$user = 'root';
-$password = '';
+### 📂 Dataset Description
+**Source**: Google Sheets
 
-try {
-    $conn = new PDO("mysql:host=$host;dbname=$dbname", $user, $password);
-    $conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-} catch (PDOException $e) {
-    echo "Connection failed: " . $e->getMessage();
-}
-?>
-```
-
-**Explanation**:
-- This script uses the **PDO (PHP Data Objects)** method for connecting to the database.
-- If the connection fails, an error message will be displayed.
-
-
+**Key Features:**
+- **Item Visibility**: How often the item is displayed.
+- **Sales**: Total revenue from an item.
+- **Outlet Type**: The type of store (e.g., supermarket, grocery store).
+- **Outlet Size**: Store size category (small, medium, large).
+- **Item Fat Content**: Low Fat or Regular.
+- **Outlet Establishment Year**: Year the store was established.
 
 ---
 
-### Next Steps
-Once the database is set up:
-1. Move to the **Registration Page (`register.php`)** so users can create accounts.
-2. Build the **Login Page (`login.php`)** to authenticate users.
-3. Proceed to dynamic pages like `index.php`.
+## 2⃣ Data Cleaning & Preprocessing
+- **Dropped irrelevant columns**: `Item Identifier`, `Outlet Identifier`.
+- **Fixed categorical inconsistencies**: Standardized `Item Fat Content`.
+- **Handled missing values**:
+  - `Item Weight` → Filled with **mean**.
+  - `Item Visibility` → Filled with **median**.
+
+---
+
+## 3⃣ Statistical Moments Analysis
+The following statistical measures were computed:
+
+| Feature          | Mean  | Variance | Skewness | Kurtosis |
+|-----------------|------:|---------:|---------:|---------:|
+| **Item Visibility** | X.XX | X.XX | X.XX | X.XX |
+| **Item Weight**  | X.XX | X.XX | X.XX | X.XX |
+| **Sales**        | X.XX | X.XX | X.XX | X.XX |
+| **Rating**       | X.XX | X.XX | X.XX | X.XX |
+
+### 📝 Insights:
+- **Skewness > 1** → Indicates **highly skewed** data.
+- **Kurtosis > 3** → Suggests **sharp peaks** (leptokurtic distribution).
+
+---
+
+## 4⃣ Interactive Visualizations & Insights
+
+### 📈 Scatter Plot: Item Visibility vs Sales
+🇼 **Observation**:
+- Items with **higher visibility** do not necessarily have **higher sales**.
+- Some **low-visibility** items still generate **high sales**.
+
+💡 **Business Insight**:
+- **Marketing efforts** should focus on **high-selling low-visibility** items to maximize revenue.
+
+---
+
+### 📊 Bar Chart: Total Sales by Outlet Type
+🇼 **Observation**:
+- **Supermarkets** contribute the **highest total sales**.
+- **Grocery stores** have significantly **lower sales**.
+
+💡 **Business Insight**:
+- **Supermarkets** are the dominant retail channel; **expanding** their reach would increase profitability.
+
+---
+
+### 📦 Box Plot: Sales Distribution by Outlet Size
+🇼 **Observation**:
+- **Larger outlets** have a **higher median sales** value.
+- **Small outlets** have a **wider sales variance**.
+
+💡 **Business Insight**:
+- Investing in **medium and large** outlets leads to **consistent sales growth**.
+
+---
+
+### 📊 Correlation Heatmap
+🇼 **Observation**:
+- Sales have a **positive correlation** with **Item Weight** and **Outlet Size**.
+- **Item Visibility** has a **weak correlation** with sales.
+
+💡 **Business Insight**:
+- **Heavier items** tend to sell **more**, possibly indicating demand for **bulk purchases**.
+
+---
+
+### 🛒 Pie Chart: Sales Contribution by Outlet Type
+🇼 **Observation**:
+- **Supermarkets** dominate more than **70%** of total sales.
+
+💡 **Business Insight**:
+- Businesses should **diversify product distribution** in supermarkets.
+
+---
+
+### 📈 Line Chart: Sales Trend vs Outlet Age
+🇼 **Observation**:
+- **Older outlets** (established before **2000**) have **lower sales trends**.
+
+💡 **Business Insight**:
+- Older outlets need **renovations, rebranding, or promotional strategies** to boost sales.
+
+---
+
+## 5⃣ Conclusion & Recommendations
+- **Outlet Type & Size matter** → Supermarkets and large stores generate the **most revenue**.
+- **Older outlets need investment** to boost performance.
+- **Item Visibility doesn’t strongly affect sales**, meaning **pricing & promotions** play a bigger role.
